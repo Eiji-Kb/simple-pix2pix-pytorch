@@ -1,17 +1,14 @@
-#import os
 import numpy as np
 import cv2
 import random
-#import matplotlib.pyplot as plt
 
-
-class LineDataset():
-    def __init__(self, dataDir='./cnvframesEx', data_start = 1, data_end = 1000, height = 256, width = 256):
+class Dataset():
+    def __init__(self, dataDir='./datasets/cnvframesEx', data_start = 0, data_end = 1000):
 
         self.dataset = []
         self.shufflelist = []
 
-        for i in range (data_start, data_end):
+        for i in range (data_start, data_end + 1):
             real_image = cv2.imread(dataDir+"/%08dA.jpg"%i)
             real_image = self.resize(real_image)
 
@@ -22,7 +19,7 @@ class LineDataset():
             
             self.shufflelist = list(range(self.len()))
       
-    def resize (self, img, base_size = 286, ipl_alg=cv2.INTER_CUBIC):
+    def resize (self, img, base_size = 286, ipl_alg = cv2.INTER_CUBIC):
         img_height, img_width, _ = img.shape
         short_side = min(img_height, img_width)
         rasio = base_size / short_side
@@ -30,8 +27,8 @@ class LineDataset():
         new_width  = int(img_width * rasio)
         new_height = int(img_height * rasio)
 
-        return cv2.resize(img, (new_height, new_width), interpolation=ipl_alg)
-
+        return cv2.resize(img, (new_height, new_width), interpolation = ipl_alg)
+ 
     def uint_color2tanh_range(self, img):
         return img / 128. - 1.
       
@@ -63,10 +60,4 @@ class LineDataset():
 
         return img1[crip_y : crip_size + crip_y, crip_x : crip_size + crip_x, :], img2[crip_y : crip_size + crip_y, crip_x : crip_size + crip_x, :]
 
-    def crip_img(self, img, crip_size = 256): 
-        img_height, img_width, _ = img.shape
-        crip_x = random.randint(0, img_width - crip_size)
-        crip_y = random.randint(0, img_height - crip_size)
-
-        return img[crip_y : crip_size + crip_y, crip_x : crip_size + crip_x, :]
 

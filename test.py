@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 from models import Generator
-from linedataset import LineDataset
+from datasets.facade_dataset import Dataset
 
 import numpy as np
 import cv2
@@ -12,29 +12,35 @@ import cv2
 batchsize =1
 input_channel = 3
 output_channel= 3
-input_height = input_width = output_height = output_width = 256
+input_height = input_width = 256
 
-input_data = LineDataset(data_start = 1000, data_end = 1500, height = input_height, width = input_width)
+input_data = Dataset(data_start = 300, data_end = 378)
 test_len = input_data.len()
 
-generator_G = Generator(input_channel, output_channel)
+generator_G = Generator(input_channel, output_channel).cuda()
 generator_G.load_state_dict(torch.load('./generator_G.pth'))
 
-generator_G.cuda()
-
 input_x_np = np.zeros((batchsize, input_channel, input_height, input_width)).astype(np.float32)
+
+def tanh_range2uint_color(img):
+    return (img * 128 + 128).astype(np.uint8)
+
+def modelimg2cvimg(img):
+    cvimg = np.array(img[0,:,:,:]).transpose(1,2,0)
+    return tanh_range2uint_color(cvimg)
 
 for iterate in range(test_len):
     image = input_data.get_image(iterate)
     input_x_np[0,:] = np.asarray(image[0])
 
     input_x = Variable(torch.from_numpy(input_x_np)).cuda()
-
     out_generator_G = generator_G.forward(input_x)
 
-    genout = out_generator_G.cpu()
-    genout = genout.data.numpy()
-    genimg = np.array(genout[0,:,:,:]).transpose(1,2,0)
-    genimg = (genimg * 128 + 128).astype(np.uint8)
-    cv2.imwrite("testImg%d.jpg"%iterate, genimg)
+    out_gen = out_generator_G.cpu()
+    out_gen = out_gen.data.numpy()
+    cvimg = modelimg2cvimg(out_gen)
+    cv2.imwrite("./results/testGenImg%d.jpg"%iterate, cvimg)
+
+    cvimg = modelimg2cvimg(input_x_np)
+    cv2.imwrite("./results/testInputImg%d.jpg"%iterate, cvimg)
 
