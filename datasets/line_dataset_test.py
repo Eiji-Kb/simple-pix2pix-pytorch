@@ -8,7 +8,7 @@ class Dataset():
         self.dataset = []
 
         for i in range (data_start, data_end + 1):
-            input_x_image = cv2.imread(dataDir+"/%08dB.jpg"%i)
+            input_x_image = cv2.imread(dataDir+"/%08dA.jpg"%i)
 
             self.dataset.append(input_x_image)
 

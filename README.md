@@ -37,25 +37,34 @@ python train.py
 
 
 ### 別のデータセットを使用する (例：線画着色)
-* ./datasets/cnvframesEx フォルダに、着色画像ファイルとその線画画像ファイルをペアで置いてください。  
-  ファイル名　着色: 00000000B.jpg 　線画: 00000000B.jpg  
-  また、画像ファイルは全て縦横256×256ピクセルに統一してください。
-  ```
-  着色　　00000000A.jpg 　00000001A.jpg 　00000002A.jpg ...
-  線画　　00000000B.jpg 　00000001B.jpg 　00000002B.jpg ...
-  ```
 
-* 使用するデータセットに合わせて、ソースファイルを修正します。今回以下に修正済みのものを用意しました。  
-  訓練：  train_line.py  
-  テスト： test_line.py  
-  ※読み込むデータの範囲は以下の行を修正してください。
-  ```
-  (train_line.py:41) input_data = Dataset(data_start = 0, data_end = 999)
-  (test_line.py:17)　input_data = Dataset(data_start = 1000, data_end = 1500)
-  ```
+   ##### データセット  
+   データセットフォルダ（デフォルト ./datasets/cnvframesEx）に、線画画像ファイルとカラー画像ファイルをペアで置いてください。
 
-* Results  
-  Testdata（200epochs)
+
+  線画画像ファイル名: シーケンス番号8桁+A.jpg  (例：00000000A.jpg)  
+  カラー画像ファイル名: シーケンス番号8桁+B.jpg  (例：00000000B.jpg)  
+  画像サイズ:  縦横256×256ピクセル
+  ```
+  線画画像:  　00000000A.jpg 　00000001A.jpg 　00000002A.jpg ...  
+カラー画像: 　00000000B.jpg 　00000001B.jpg 　00000002B.jpg ...
+  ```  
+
+   ##### Train
+   訓練に使用するデータの範囲を指定してくだい。任意のデータセットフォルダを使用するときは--datasetオプションを追加してくだい。　( --dataset ./datasets/mydataset )
+   ```
+   python train_line.py --data_start 0 --data_end 999
+   ```
+   ##### Test
+   テストに使用するデータの範囲を指定してくだい。任意のデータセットフォルダを使用するときは--datasetオプションを追加してくだい。　( --dataset ./datasets/mydataset )
+   ```
+   python test_line.py --data_start 1000 --data_end 1500
+   ```
+
+
+
+* テスト例  
+  テストデータ　（訓練データ画像1,000枚、200エポック)
    ![代替テキスト](./fig/colorize.jpg)
    このテストの訓練データはいくつかのアニメ作品の画像です。しかしながらここでのテストはアニメでなく、以下のサイトの線画作品を使用させていただきました。  
    [着色練習用線画](http://iradukai.com/nurie2.htm)  

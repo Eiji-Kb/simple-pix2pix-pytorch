@@ -28,9 +28,11 @@ def modelimg2cvimg(img):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epoch", default=200, type=int)
-parser.add_argument("--iterate", default=10, type=int)
+parser.add_argument("--view_iterate", default=10, type=int)
 parser.add_argument("--lambda1", default=100, type=int)
-
+parser.add_argument("--data_start", default=0, type=int)
+parser.add_argument("--data_end", default=999, type=int)
+parser.add_argument("--dataset", default="./datasets/cnvframesEx", type=str)
 args = parser.parse_args()
 
 batchsize = 1
@@ -38,7 +40,7 @@ input_channel = 3
 output_channel = 3
 input_height = input_width = output_height = output_width = 256
 
-input_data = Dataset(data_start = 0, data_end = 999)
+input_data = Dataset(dataDir = args.dataset, data_start = args.data_start, data_end = args.data_end)
 train_len = input_data.len()
 
 generator_G = Generator(input_channel, output_channel)
@@ -86,14 +88,14 @@ for epoch in range(args.epoch):
         loss_gen.backward()
         optimizer_G.step()
 
-        if iterate % args.iterate == 0:
+        if iterate % args.view_iterate == 0:
             print ('{} [{}/{}] LossGen= {} LossDis= {}'.format(iterate, epoch+1, args.epoch, loss_gen.data[0], loss_dis.data[0]))
 
         #""" MONITOR
         out_gen = out_generator_G.cpu()
         out_gen = out_gen.data.numpy()
         cvimg = modelimg2cvimg(out_gen)
-        cv2.imwrite("./results/trainGenImg%d.jpg"%iterate, cvimg)
+        cv2.imwrite("./results/trainGen%d.jpg"%iterate, cvimg)
         #"""
 
     torch.save(generator_G.state_dict(),'./generator_G.pth')

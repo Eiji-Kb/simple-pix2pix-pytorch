@@ -9,11 +9,11 @@ class Dataset():
         self.shufflelist = []
 
         for i in range (data_start, data_end + 1):
-            real_image = cv2.imread(dataDir+"/%08dA.jpg"%i)
-            real_image = self.resize(real_image)
-
-            input_x_image = cv2.imread(dataDir+"/%08dB.jpg"%i)
+            input_x_image = cv2.imread(dataDir+"/%08dA.jpg"%i)
             input_x_image = self.resize(input_x_image)
+
+            real_image = cv2.imread(dataDir+"/%08dB.jpg"%i)
+            real_image = self.resize(real_image)
 
             self.dataset.append((input_x_image, real_image))
             
